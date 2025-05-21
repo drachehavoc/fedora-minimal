@@ -65,7 +65,7 @@ if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
 fi
 
 # define sessões graficas como padrão
-systemctl set-default graphical.target
+# systemctl set-default graphical.target
 
 ################################################################################
 ### PLUGINS E CUTOMIZAÇÕES EXTRAS                                            ###
