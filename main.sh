@@ -47,14 +47,10 @@ dnf install -y \
 
 # install cleanup
 dnf remove -y \
-  gnome-tour \
-  malcontent
-
+  gnome-tour
+  
 # gsettings
 if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
-  if id "$TARGET_USER" &>/dev/null; then
-    echo ">>> Aplicando configurações GSettings para o usuário $TARGET_USER..."
-
     # dark mode
     run_gsettings_for_user set org.gnome.desktop.interface color-scheme "prefer-dark"
     run_gsettings_for_user set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
@@ -66,10 +62,6 @@ if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
     run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
     run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
     run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab']"
-
-  else
-    echo "AVISO: Usuário alvo '$TARGET_USER' (determinado para GSettings) não encontrado no sistema. Pulando configurações GSettings."
-  fi
 fi
 
 # define sessões graficas como padrão
@@ -82,12 +74,14 @@ systemctl set-default graphical.target
 dnf install -y \
     gnome-shell-extension-just-perfection
 
-run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
-run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash false
-run_gsettings_for_user set org.gnome.shell.extensions.just-perfection search false
+if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
+  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
+  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash false
+  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection search false
+fi
 
 ################################################################################
 ### INICIAR SESSÂO GDM                                                       ###
 ################################################################################
 
-systemctl start gdm
+# systemctl start gdm
