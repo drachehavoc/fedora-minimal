@@ -4,16 +4,16 @@
 
 # install
 dnf install -y \
-gdm \
-gnome-shell \
-gnome-terminal \
-nautilus \
-nautilus-open-terminal \
-adobe-source-code-pro-fonts
+  gdm \
+  gnome-shell \
+  gnome-terminal \
+  nautilus \
+  nautilus-open-terminal \
+  adobe-source-code-pro-fonts
 
 # cleanup
 dnf remove -y \
-gnome-tour 
+  gnome-tour 
 
 # dark mode
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
