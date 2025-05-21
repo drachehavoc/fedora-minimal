@@ -19,7 +19,7 @@ gnome-tour
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
 gsettings set org.gnome.desktop.background primary-color '#2c3e50'
-gsettings set org.gnome.desktop.interface accent-color 'Purple'
+gsettings set org.gnome.desktop.interface accent-color 'purple'
 
 # shortcuts
 gsettings set org.gnome.desktop.wm.keybindings switch-applications "[]"
