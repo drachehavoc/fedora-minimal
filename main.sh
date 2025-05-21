@@ -1,7 +1,7 @@
 ### GNOME ###
 
 # install
-dnf install -y 
+dnf install -y \
 gdm \
 gnome-shell \
 gnome-terminal \
