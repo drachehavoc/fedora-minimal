@@ -33,18 +33,18 @@ dnf remove -y \
 #gsettings set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
 #gsettings set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab']"
 
-# dark mode
+
+dbus-run-session -- bash <<'EOF'
+export DISPLAY=:0
 dconf write /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
 dconf write /org/gnome/desktop/interface/gtk-theme "'Adwaita-dark'"
 dconf write /org/gnome/desktop/background/primary-color "'#2c3e50'"
 dconf write /org/gnome/desktop/interface/accent-color "'purple'"
-
-# shortcuts
 dconf write /org/gnome/desktop/wm/keybindings/switch-applications "@as []"
 dconf write /org/gnome/desktop/wm/keybindings/switch-applications-backward "@as []"
 dconf write /org/gnome/desktop/wm/keybindings/switch-windows "@as ['<Alt>Tab']"
 dconf write /org/gnome/desktop/wm/keybindings/switch-windows-backward "@as ['<Shift><Alt>Tab']"
-
+EOF
 
 
 # set graphical as default
