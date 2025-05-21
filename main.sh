@@ -12,7 +12,7 @@ nautilus-open-terminal \
 adobe-source-code-pro-fonts
 
 # cleanup
-gnome remove -y \
+dnf remove -y \
 gnome-tour 
 
 # dark mode
