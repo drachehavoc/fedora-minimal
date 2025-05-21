@@ -49,3 +49,39 @@ dnf install -y \
 dnf remove -y \
   gnome-tour
   
+# gsettings
+if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
+    # dark mode
+    run_gsettings_for_user set org.gnome.desktop.interface color-scheme "prefer-dark"
+    run_gsettings_for_user set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
+    run_gsettings_for_user set org.gnome.desktop.background primary-color "#2c3e50"
+    run_gsettings_for_user set org.gnome.desktop.interface accent-color "purple"
+
+    # shortcuts
+    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications "[]"
+    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
+    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
+    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab']"
+fi
+
+# define sessões graficas como padrão
+systemctl set-default graphical.target
+
+################################################################################
+### PLUGINS E CUTOMIZAÇÕES EXTRAS                                            ###
+################################################################################
+
+dnf install -y \
+    gnome-shell-extension-just-perfection
+
+if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
+  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
+  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash false
+  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection search false
+fi
+
+################################################################################
+### INICIAR SESSÂO GDM                                                       ###
+################################################################################
+
+# systemctl start gdm
