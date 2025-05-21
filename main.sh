@@ -43,7 +43,8 @@ dnf install -y \
 
 # install cleanup
 dnf remove -y \
-  gnome-tour
+  gnome-tour \
+  malcontent
 
 # gsettings
 if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
@@ -70,5 +71,15 @@ fi
 # define sessões graficas como padrão
 systemctl set-default graphical.target
 
-# inicia sessão gdm
+################################################################################
+### PLUGINS E CUTOMIZAÇÕES EXTRAS                                            ###
+################################################################################
+
+dnf install -y \
+    gnome-shell-extension-just-perfection
+
+################################################################################
+### INICIAR SESSÂO GDM                                                       ###
+################################################################################
+
 systemctl start gdm
