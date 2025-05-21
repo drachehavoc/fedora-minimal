@@ -1,3 +1,5 @@
+# bin
+
 ### GNOME ###
 
 # install
@@ -16,8 +18,8 @@ gnome-tour
 # dark mode
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
-gsettings set org.gnome.shell.settings-background color-scheme 'Yaru-dark'
-gsettings set org.gnome.desktop.background primary-color '#667c4d'
+gsettings set org.gnome.desktop.background primary-color '#2c3e50'
+gsettings set org.gnome.desktop.interface accent-color '#667c4d'
 
 # shortcuts
 gsettings set org.gnome.desktop.wm.keybindings switch-applications "[]"
