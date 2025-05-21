@@ -52,16 +52,16 @@ if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
     echo ">>> Aplicando configurações GSettings para o usuário $TARGET_USER..."
 
     # dark mode
-    run_gsettings_for_user "set" "org.gnome.desktop.interface" "color-scheme" "prefer-dark"
-    run_gsettings_for_user "set" "org.gnome.desktop.interface" "gtk-theme" "Adwaita-dark"
-    run_gsettings_for_user "set" "org.gnome.desktop.background" "primary-color" "#2c3e50"
-    run_gsettings_for_user "set" "org.gnome.desktop.interface" "accent-color" "purple"
+    run_gsettings_for_user set org.gnome.desktop.interface color-scheme "prefer-dark"
+    run_gsettings_for_user set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
+    run_gsettings_for_user set org.gnome.desktop.background primary-color "#2c3e50"
+    run_gsettings_for_user set org.gnome.desktop.interface accent-color "purple"
 
     # shortcuts
-    run_gsettings_for_user "set" "org.gnome.desktop.wm.keybindings" "switch-applications" "[]"
-    run_gsettings_for_user "set" "org.gnome.desktop.wm.keybindings" "switch-applications-backward" "[]"
-    run_gsettings_for_user "set" "org.gnome.desktop.wm.keybindings" "switch-windows" "['<Alt>Tab']"
-    run_gsettings_for_user "set" "org.gnome.desktop.wm.keybindings" "switch-windows-backward" "['<Shift><Alt>Tab']"
+    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications "[]"
+    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
+    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
+    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab']"
 
   else
     echo "AVISO: Usuário alvo '$TARGET_USER' (determinado para GSettings) não encontrado no sistema. Pulando configurações GSettings."
@@ -77,6 +77,10 @@ systemctl set-default graphical.target
 
 dnf install -y \
     gnome-shell-extension-just-perfection
+
+run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
+run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash false
+run_gsettings_for_user set org.gnome.shell.extensions.just-perfection search false
 
 ################################################################################
 ### INICIAR SESSÂO GDM                                                       ###
