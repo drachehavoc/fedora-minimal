@@ -1,5 +1,9 @@
 #!/bin/bash
 
+################################################################################
+### VERIFICAÇÕE & FUNÇÕES                                                    ###
+################################################################################
+
 # verificar se o script está sendo executado como root
 if [ "$(id -u)" -ne 0 ]; then
   echo "Este script precisa ser executado como root (ex: usando sudo)."
