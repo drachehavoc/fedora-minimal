@@ -69,3 +69,6 @@ fi
 
 # define sessões graficas como padrão
 systemctl set-default graphical.target
+
+# inicia sessão gdm
+systemctl start gdm
