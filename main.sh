@@ -46,6 +46,8 @@ dnf install                             \
   nautilus-open-terminal                \
   adobe-source-code-pro-fonts           \
   distrobox                             \
+  google-noto-sans-cjk-ttc-fonts        \
+  google-noto-emoji-color-fonts         \
   -y --setopt=install_weak_deps=false
 
 
