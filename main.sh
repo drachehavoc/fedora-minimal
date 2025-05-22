@@ -77,9 +77,9 @@ if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
   run_gsettings_for_user set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']"
   # meu estilo
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
-  run_gsettings_for_user org.gnome.shell.extensions.just-perfection dash-icon-size 32
-  run_gsettings_for_user org.gnome.shell.extensions.just-perfection dash-separator false
-  run_gsettings_for_user org.gnome.shell.extensions.just-perfection workspace-switcher-should-show false
+  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash-icon-size 32
+  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash-separator false
+  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection workspace-switcher-should-show false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection search false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel-in-overview true
   # remova isso, não seja panaca apoio o projeto / isso não mostra a mensagem de pedido de apoio
