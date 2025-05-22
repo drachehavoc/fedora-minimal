@@ -41,13 +41,11 @@ dnf install -y --setopt=install_weak_deps=false \
   gdm \
   gnome-shell \
   gnome-terminal \
-  nautilus \
-  nautilus-open-terminal \
   adobe-source-code-pro-fonts
 
-# install cleanup
-dnf remove -y \
-  gnome-tour
+dnf install -y \
+  nautilus \
+  nautilus-open-terminal 
   
 # gsettings
 if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
