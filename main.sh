@@ -97,16 +97,18 @@ distrobox create \
   --image fedora \
   --name day-by-day \
   --hostname day-by-day \
-  --home /home/varela/Distrobox-Homes/day-by-day \
-  --nvidia
+  --home ~/Distrobox-Homes/day-by-day \
+  --nvidia \
+  --yes
 
 distrobox create \
   --image fedora \
   --name sandbox \
   --hostname sandbox \
-  --home /home/varela/Distrobox-Homes/sandbox \
+  --home ~/Distrobox-Homes/sandbox \
   --no-entry \
-  --nvidia
+  --nvidia \
+  --yes
 
 ############################################################################################
 ### CLEANUP                                                                              ###
