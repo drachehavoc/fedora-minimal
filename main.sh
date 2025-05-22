@@ -69,11 +69,12 @@ systemctl set-default graphical.target
 ############################################################################################
 
 dnf install -y --setopt=install_weak_deps=false \
-    gnome-shell-extension-just-perfection
+    gnome-shell-extension-just-perfection \
+    gnome-shell-extension-blur-my-shell
 
 if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
   # habilita a extensão
-  run_gsettings_for_user set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection']"
+  run_gsettings_for_user set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']"
   # meu estilo
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
   run_gsettings_for_user org.gnome.shell.extensions.just-perfection dash-icon-size 32
@@ -89,6 +90,7 @@ fi
 ### CLEANUP                                                                  ###
 ############################################################################################
 
+# remove rodos os intens pinados na dash
 if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
   run_gsettings_for_user set org.gnome.shell favorite-apps "[]"
 fi
