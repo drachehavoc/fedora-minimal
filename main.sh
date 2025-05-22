@@ -56,7 +56,6 @@ if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
     run_gsettings_for_user set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
     run_gsettings_for_user set org.gnome.desktop.background primary-color "#2c3e50"
     run_gsettings_for_user set org.gnome.desktop.interface accent-color "purple"
-
     # shortcuts
     run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications "[]"
     run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
@@ -84,9 +83,9 @@ if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel-in-overview true
   # remova isso, não seja panaca apoio o projeto / isso não mostra a mensagem de pedido de apoio
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection support-notifier-showed-version 34
-  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection show-welcome-message false
-  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection startup-status 1
-  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection support-notifier-type 1
+  #run_gsettings_for_user set org.gnome.shell.extensions.just-perfection show-welcome-message false
+  #run_gsettings_for_user set org.gnome.shell.extensions.just-perfection startup-status 1
+  #run_gsettings_for_user set org.gnome.shell.extensions.just-perfection support-notifier-type 1
 fi
 
 
@@ -94,9 +93,7 @@ fi
 ### CLEANUP                                                                  ###
 ################################################################################
 
-#dnf remove -y \
-#  gnome-tour \
-#  gnome-extensions
+# nada nada pra fazer por enquanto
 
 ################################################################################
 ### INICIAR SESSÂO GDM                                                       ###
