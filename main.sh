@@ -33,56 +33,55 @@ run_gsettings_for_user() {
 }
 
 ############################################################################################
+### INTALAÇOES DE PACOTES                                                                ###
+############################################################################################
+
+dnf install                             \
+  gdm                                   \
+  gnome-shell                           \
+  gnome-terminal                        \
+  gnome-shell-extension-just-perfection \
+  gnome-shell-extension-blur-my-shell   \
+  nautilus                              \
+  nautilus-open-terminal                \
+  adobe-source-code-pro-fonts           \
+  distrobox                             \
+  -y --setopt=install_weak_deps=false
+
+
+############################################################################################
 ### GNOME                                                                                ###
 ############################################################################################
 
-# install
-dnf install -y --setopt=install_weak_deps=false \
-  gdm \
-  gnome-shell \
-  gnome-terminal \
-  adobe-source-code-pro-fonts
+# define sessões gráficas como padrão
+systemctl set-default graphical.target
 
-dnf install -y \
-  nautilus \
-  nautilus-open-terminal 
   
 # gsettings
 if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
-    # dark mode
-    run_gsettings_for_user set org.gnome.desktop.interface color-scheme "prefer-dark"
-    run_gsettings_for_user set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
-    run_gsettings_for_user set org.gnome.desktop.background primary-color "#2c3e50"
-    run_gsettings_for_user set org.gnome.desktop.interface accent-color "purple"
-    # shortcuts
-    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications "[]"
-    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
-    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
-    run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab']"
-fi
-
-# define sessões graficas como padrão
-systemctl set-default graphical.target
-
-############################################################################################
-### PLUGINS E CUTOMIZAÇÕES EXTRAS                                                        ###
-############################################################################################
-
-dnf install -y --setopt=install_weak_deps=false \
-    gnome-shell-extension-just-perfection \
-    gnome-shell-extension-blur-my-shell
-
-if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
-  # habilita a extensão
+  # dark mode
+  run_gsettings_for_user set org.gnome.desktop.interface color-scheme "prefer-dark"
+  run_gsettings_for_user set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
+  run_gsettings_for_user set org.gnome.desktop.background primary-color "#2c3e50"
+  run_gsettings_for_user set org.gnome.desktop.interface accent-color "purple"
+  # shortcuts
+  run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications "[]"
+  run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
+  run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
+  run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab']"
+  # muda o formato de hora para 24hrs
+  run_gsettings_for_user set org.gnome.desktop.interface clock-format 24h    
+  # habilita a extensões para o gnome
   run_gsettings_for_user set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']"
-  # meu estilo
+  # exteção just-perfection: meu estilo da extensão
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash-icon-size 32
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash-separator false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection workspace-switcher-should-show false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection search false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel-in-overview true
-  # remova isso, não seja panaca apoio o projeto / isso não mostra a mensagem de pedido de apoio
+  # isso não mostra a mensagem de pedido de apoio
+  # NÃO FAÇA ISSO EM PRODUÇÂO, DOE! para o projeto just-perfection 
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection support-notifier-showed-version 999
 fi
 
@@ -90,24 +89,21 @@ fi
 ### DISTROBOX                                                                            ###
 ############################################################################################
 
-dnf install -y --setopt=install_weak_deps=false \
-  distrobox
-
-distrobox create \
-  --image fedora \
-  --name day-by-day \
-  --hostname day-by-day \
+distrobox create                      \
+  --image fedora                      \
+  --name day-by-day                   \
+  --hostname day-by-day               \
   --home ~/Distrobox-Homes/day-by-day \
-  --nvidia \
+  --nvidia                            \
   --yes
 
-distrobox create \
-  --image fedora \
-  --name sandbox \
-  --hostname sandbox \
-  --home ~/Distrobox-Homes/sandbox \
-  --no-entry \
-  --nvidia \
+distrobox create                      \
+  --image fedora                      \
+  --name sandbox                      \
+  --hostname sandbox                  \
+  --home ~/Distrobox-Homes/sandbox    \
+  --no-entry                          \
+  --nvidia                            \
   --yes
 
 ############################################################################################
