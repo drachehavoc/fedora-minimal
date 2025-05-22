@@ -42,7 +42,6 @@ dnf install -y --setopt=install_weak_deps=false \
   nautilus \
   nautilus-open-terminal \ 
   adobe-source-code-pro-fonts \
-  ;
 
 # gsettings
 if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
@@ -69,7 +68,6 @@ if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
   # instala as extenções
   dnf install -y --setopt=install_weak_deps=false \
       gnome-shell-extension-just-perfection \
-      ;
   # habilita as extenções
   run_gsettings_for_user set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection']"
   # meu estilo 😉
