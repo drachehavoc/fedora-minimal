@@ -81,6 +81,7 @@ if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection search false
+  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel-in-overview true
   # remova isso, não seja panaca apoio o projeto / isso não mostra a mensagem de pedido de apoio
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection show-welcome-message false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection startup-status 1
