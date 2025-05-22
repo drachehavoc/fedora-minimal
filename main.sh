@@ -85,4 +85,4 @@ fi
 ### INICIAR SESSÂO GDM                                                       ###
 ################################################################################
 
-# systemctl start gdm
+systemctl start gdm
