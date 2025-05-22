@@ -37,7 +37,7 @@ run_gsettings_for_user() {
 ################################################################################
 
 # install
-dnf install -y \
+dnf install -y --setopt=install_weak_deps=false \
   gdm \
   gnome-shell \
   gnome-terminal \
@@ -71,7 +71,7 @@ fi
 ### PLUGINS E CUTOMIZAÇÕES EXTRAS                                            ###
 ################################################################################
 
-dnf install -y \
+dnf install -y --setopt=install_weak_deps=false \
     gnome-shell-extension-just-perfection
 
 if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
@@ -88,6 +88,15 @@ if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection startup-status 1
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection support-notifier-type 1
 fi
+
+
+################################################################################
+### CLEANUP                                                                  ###
+################################################################################
+
+#dnf remove -y \
+#  gnome-tour \
+#  gnome-extensions
 
 ################################################################################
 ### INICIAR SESSÂO GDM                                                       ###
