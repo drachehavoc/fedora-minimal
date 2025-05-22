@@ -75,12 +75,16 @@ dnf install -y \
     gnome-shell-extension-just-perfection
 
 if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
+  # habilita a extensão
+  run_gsettings_for_user set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection']"
+  # meu estilo
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection search false
+  # remova isso, não seja panaca apoio o projeto / isso não mostra a mensagem de pedido de apoio
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection show-welcome-message false
   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection startup-status 1
-  run_gsettings_for_user set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection']"
+  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection support-notifier-type 1
 fi
 
 ################################################################################
