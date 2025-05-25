@@ -55,45 +55,37 @@ dnf install                             \
 ### GNOME                                                                                ###
 ############################################################################################
 
-# define sessões gráficas como padrão
-#systemctl set-default graphical.target
-
-  
-# gsettings
-if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
-  # dark mode
-  run_gsettings_for_user set org.gnome.desktop.interface color-scheme "prefer-dark"
-  run_gsettings_for_user set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
-  run_gsettings_for_user set org.gnome.desktop.background primary-color "#2c3e50"
-  run_gsettings_for_user set org.gnome.desktop.interface accent-color "purple"
-  # shortcuts
-  run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications "[]"
-  run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
-  run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
-  run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab']"
-  # muda o formato de hora para 24hrs
-  run_gsettings_for_user set org.gnome.desktop.interface clock-format 24h    
-  # habilita a extensões para o gnome
-  run_gsettings_for_user set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']"
-  # exteção just-perfection: meu estilo da extensão
-  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
-  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash-icon-size 32
-  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash-separator false
-  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection workspace-switcher-should-show false
-  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection search false
-  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel-in-overview true
-  # isso não mostra a mensagem de pedido de apoio
-  # NÃO FAÇA ISSO EM PRODUÇÂO, DOE! para o projeto just-perfection 
-  run_gsettings_for_user set org.gnome.shell.extensions.just-perfection support-notifier-showed-version 999
-fi
+# # gsettings
+# if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
+#   # dark mode
+#   run_gsettings_for_user set org.gnome.desktop.interface color-scheme "prefer-dark"
+#   run_gsettings_for_user set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
+#   run_gsettings_for_user set org.gnome.desktop.background primary-color "#2c3e50"
+#   run_gsettings_for_user set org.gnome.desktop.interface accent-color "purple"
+#   # shortcuts
+#   run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications "[]"
+#   run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
+#   run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
+#   run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab']"
+#   # muda o formato de hora para 24hrs
+#   run_gsettings_for_user set org.gnome.desktop.interface clock-format 24h    
+#   # habilita a extensões para o gnome
+#   run_gsettings_for_user set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']"
+#   # exteção just-perfection: meu estilo da extensão
+#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
+#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash-icon-size 32
+#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash-separator false
+#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection workspace-switcher-should-show false
+#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection search false
+#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel-in-overview true
+#   # isso não mostra a mensagem de pedido de apoio
+#   # NÃO FAÇA ISSO EM PRODUÇÂO, DOE! para o projeto just-perfection 
+#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection support-notifier-showed-version 999
+# fi
 
 ############################################################################################
 ### DISTROBOX                                                                            ###
 ############################################################################################
-
-clear
-
-read -p "Press key to continue.. " -n1 -s
 
 distrobox create                      \
   --image fedora                      \
@@ -102,8 +94,6 @@ distrobox create                      \
   --home ~/Distrobox-Homes/day-by-day \
   --nvidia                            \
   --yes
-
-read -p "Press key to continue.. " -n1 -s
 
 distrobox create                      \
   --image fedora                      \
@@ -118,13 +108,16 @@ distrobox create                      \
 ### CLEANUP                                                                              ###
 ############################################################################################
 
-# remove rodos os intens pinados na dash
-if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
-  run_gsettings_for_user set org.gnome.shell favorite-apps "[]"
-fi
+# # remove rodos os intens pinados na dash
+# if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
+#   run_gsettings_for_user set org.gnome.shell favorite-apps "[]"
+# fi
 
 ############################################################################################
 ### INICIAR SESSÂO GDM                                                                   ###
 ############################################################################################
 
-systemctl start gdm
+# define sessões gráficas como padrão
+# systemctl set-default graphical.target
+
+# systemctl start gdm
