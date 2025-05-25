@@ -1,60 +1,87 @@
 #!/bin/bash
 
-############################################################################################
-### VERIFICAÇÕE & FUNÇÕES                                                                ###
-############################################################################################
+# ############################################################################################ #
+# ### VERIFICAR USUÁRIOS                                                                   ### #
+# ############################################################################################ #
 
-# verificar se o script está sendo executado como root
+# 1. Verificar se o script está sendo executado com privilégios de root
 if [ "$(id -u)" -ne 0 ]; then
-  echo "Este script precisa ser executado como root (ex: usando sudo)."
+  echo "ERRO: Este script precisa ser executado com privilégios de root."
+  echo "Por favor, use 'sudo $0'"
   exit 1
 fi
 
-# determina o usuário alvo
-APPLY_GSETTINGS_FLAG=false # Assume que NÃO vamos aplicar por padrão
-if [ -n "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ]; then
-  echo "INFO: Configurações GSettings serão aplicadas para o usuário: $TARGET_USER"
-  TARGET_USER="$SUDO_USER"
-  APPLY_GSETTINGS_FLAG=true
-else
-  echo "AVISO: Não foi encontrado um usuário para aplicação de Configurações GSettings."
-  # APPLY_GSETTINGS_FLAG=false
+# 2. Verificar se o script foi invocado por um usuário comum via sudo,
+#    e não diretamente pelo usuário root ou por 'root' usando sudo.
+#    A variável SUDO_USER contém o nome do usuário que invocou sudo.
+#    Se SUDO_USER estiver vazia, significa que não foi via sudo (login root direto).
+#    Se SUDO_USER for "root", significa que o usuário root usou 'sudo ./script.sh'.
+if [ -z "$SUDO_USER" ] || [ "$SUDO_USER" == "root" ]; then
+  echo "ERRO: Este script deve ser executado por um usuário comum usando 'sudo'."
+  echo "Não execute diretamente como root ou usando 'sudo' quando já logado como root."
+  echo "Exemplo: usuario_comum$ sudo $0"
+  exit 1
 fi
 
-# função para usar gsettings sem sessão iniciada para usuário 
-run_gsettings_for_user() {
-  local g_subcommand="$1"
-  local g_schema="$2"
-  local g_key="$3"
-  local g_value="$4"
-  if ! sudo -H -u "$TARGET_USER" dbus-run-session gsettings "$g_subcommand" "$g_schema" "$g_key" "$g_value"; then
-    echo "  AVISO: Falha ao executar gsettings $g_subcommand $g_schema $g_key para o usuário $TARGET_USER"
-  fi
-}
+# ############################################################################################ #
+# ### FUNÇÕES                                                                              ### #
+# ############################################################################################ #
 
-############################################################################################
-### INTALAÇOES DE PACOTES                                                                ###
-############################################################################################
+# # verificar se o script está sendo executado como root
+# if [ "$(id -u)" -ne 0 ]; then
+#   echo "Este script precisa ser executado como root (ex: usando sudo)."
+#   exit 1
+# fi
 
-dnf install                             \
-  gdm                                   \
-  gnome-shell                           \
-  gnome-terminal                        \
-  gnome-shell-extension-just-perfection \
-  gnome-shell-extension-blur-my-shell   \
-  nautilus                              \
-  nautilus-open-terminal                \
-  adobe-source-code-pro-fonts           \
-  distrobox                             \
-  google-noto-sans-cjk-ttc-fonts        \
-  google-noto-emoji-color-fonts         \
-  -y --setopt=install_weak_deps=false
+# # determina o usuário alvo
+# APPLY_GSETTINGS_FLAG=false # Assume que NÃO vamos aplicar por padrão
+# if [ -n "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ]; then
+#   echo "INFO: Configurações GSettings serão aplicadas para o usuário: $TARGET_USER"
+#   TARGET_USER="$SUDO_USER"
+#   APPLY_GSETTINGS_FLAG=true
+# else
+#   echo "AVISO: Não foi encontrado um usuário para aplicação de Configurações GSettings."
+#   # APPLY_GSETTINGS_FLAG=false
+# fi
+
+# # função para usar gsettings sem sessão iniciada para usuário 
+# run_gsettings_for_user() {
+#   local g_subcommand="$1"
+#   local g_schema="$2"
+#   local g_key="$3"
+#   local g_value="$4"
+#   if ! sudo -H -u "$TARGET_USER" dbus-run-session gsettings "$g_subcommand" "$g_schema" "$g_key" "$g_value"; then
+#     echo "  AVISO: Falha ao executar gsettings $g_subcommand $g_schema $g_key para o usuário $TARGET_USER"
+#   fi
+# }
+
+# ############################################################################################
+# ### INTALAÇOES DE PACOTES                                                                ###
+# ############################################################################################
+
+# dnf install                             \
+#   gdm                                   \
+#   gnome-shell                           \
+#   gnome-terminal                        \
+#   gnome-shell-extension-just-perfection \
+#   gnome-shell-extension-blur-my-shell   \
+#   nautilus                              \
+#   nautilus-open-terminal                \
+#   adobe-source-code-pro-fonts           \
+#   distrobox                             \
+#   google-noto-sans-cjk-ttc-fonts        \
+#   google-noto-emoji-color-fonts         \
+#   -y --setopt=install_weak_deps=false
 
 
-############################################################################################
-### GNOME                                                                                ###
-############################################################################################
+# ############################################################################################
+# ### GNOME                                                                                ###
+# ############################################################################################
 
+# # define sessões gráficas como padrão
+# systemctl set-default graphical.target
+
+  
 # # gsettings
 # if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
 #   # dark mode
@@ -83,41 +110,44 @@ dnf install                             \
 #   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection support-notifier-showed-version 999
 # fi
 
-############################################################################################
-### DISTROBOX                                                                            ###
-############################################################################################
+# ############################################################################################
+# ### DISTROBOX                                                                            ###
+# ############################################################################################
 
-distrobox create                      \
-  --image fedora                      \
-  --name day-by-day                   \
-  --hostname day-by-day               \
-  --home ~/Distrobox-Homes/day-by-day \
-  --nvidia                            \
-  --yes
+# clear
 
-distrobox create                      \
-  --image fedora                      \
-  --name sandbox                      \
-  --hostname sandbox                  \
-  --home ~/Distrobox-Homes/sandbox    \
-  --no-entry                          \
-  --nvidia                            \
-  --yes
+# read -p "Press key to continue.. " -n1 -s
 
-############################################################################################
-### CLEANUP                                                                              ###
-############################################################################################
+# distrobox create                      \
+#   --image fedora                      \
+#   --name day-by-day                   \
+#   --hostname day-by-day               \
+#   --home ~/Distrobox-Homes/day-by-day \
+#   --nvidia                            \
+#   --yes
+
+# read -p "Press key to continue.. " -n1 -s
+
+# distrobox create                      \
+#   --image fedora                      \
+#   --name sandbox                      \
+#   --hostname sandbox                  \
+#   --home ~/Distrobox-Homes/sandbox    \
+#   --no-entry                          \
+#   --nvidia                            \
+#   --yes
+
+# ############################################################################################
+# ### CLEANUP                                                                              ###
+# ############################################################################################
 
 # # remove rodos os intens pinados na dash
 # if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
 #   run_gsettings_for_user set org.gnome.shell favorite-apps "[]"
 # fi
 
-############################################################################################
-### INICIAR SESSÂO GDM                                                                   ###
-############################################################################################
-
-# define sessões gráficas como padrão
-# systemctl set-default graphical.target
+# ############################################################################################
+# ### INICIAR SESSÂO GDM                                                                   ###
+# ############################################################################################
 
 # systemctl start gdm
