@@ -91,6 +91,10 @@ fi
 ### DISTROBOX                                                                            ###
 ############################################################################################
 
+clear
+
+read -p "Press key to continue.. " -n1 -s
+
 distrobox create                      \
   --image fedora                      \
   --name day-by-day                   \
@@ -98,6 +102,8 @@ distrobox create                      \
   --home ~/Distrobox-Homes/day-by-day \
   --nvidia                            \
   --yes
+
+read -p "Press key to continue.. " -n1 -s
 
 distrobox create                      \
   --image fedora                      \
