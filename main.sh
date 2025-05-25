@@ -56,7 +56,7 @@ dnf install                             \
 ############################################################################################
 
 # define sessões gráficas como padrão
-systemctl set-default graphical.target
+#systemctl set-default graphical.target
 
   
 # gsettings
