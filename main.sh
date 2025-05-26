@@ -56,6 +56,7 @@ dnf install                             \
   nautilus                              \
   nautilus-open-terminal                \
   adobe-source-code-pro-fonts           \
+  flatpak                               \
   distrobox                             \
   google-noto-sans-cjk-ttc-fonts        \
   google-noto-emoji-color-fonts         \
@@ -115,6 +116,13 @@ gset shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur
 
 # remove rodos os intens pinados na dash
 gset shell favorite-apps "[]"
+
+# ############################################################################################ #
+# ### FLATPAK                                                                              ### #
+# ############################################################################################ #
+
+# adiciona repositório flathub 
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 # ############################################################################################ #
 # ### DISTROBOX                                                                            ### #
