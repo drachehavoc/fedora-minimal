@@ -56,7 +56,7 @@ gset() {
   local g_schema="$1"
   local g_key="$2"
   local g_value="$3"
-  echo dbus-run-session gsettings set org.gnome.$g_schema $g_key $g_value 
+  runas dbus-run-session gsettings set org.gnome.$g_schema $g_key $g_value 
 }
 
 # ############################################################################################ #
