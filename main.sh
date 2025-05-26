@@ -91,8 +91,7 @@ gset shell.extensions.just-perfection support-notifier-showed-version "999"
 gset desktop.interface clock-format "24h"
 
 # habilita a extensões para o gnome
-#gset shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']"
-runas 
+gset shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']" 
 
 # remove rodos os intens pinados na dash
 gset shell favorite-apps "[]"
