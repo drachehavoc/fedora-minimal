@@ -24,6 +24,26 @@ if [ -z "$SUDO_USER" ] || [ "$SUDO_USER" == "root" ]; then
 fi
 
 # ############################################################################################ #
+# ### CONFIGURAÇÃO DO DNF                                                                  ### #
+# ############################################################################################ #
+
+# Backup do arquivo atual
+cp /etc/dnf/dnf.conf /etc/dnf/dnf.conf.bak
+
+# Substitui o conteúdo do dnf.conf
+cat << EOF > /etc/dnf/dnf.conf
+[main]
+max_parallel_downloads=15
+installonly_limit=10
+install_weak_deps=False
+fastestmirror=True
+deltarpm=True
+EOF
+
+# 
+sudo dnf clean all
+
+# ############################################################################################ #
 # ### INTALAÇOES DE PACOTES                                                                ### #
 # ############################################################################################ #
 
