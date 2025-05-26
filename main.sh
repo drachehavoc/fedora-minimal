@@ -7,7 +7,7 @@
 # 1. Verificar se o script está sendo executado com privilégios de root
 if [ "$(id -u)" -ne 0 ]; then
   echo "ERRO: Este script precisa ser executado com privilégios de root."
-  echo "Por favor, use 'sudo $0'"
+  echo "      Por favor, use 'sudo $0'"
   exit 1
 fi
 
@@ -18,139 +18,108 @@ fi
 #    Se SUDO_USER for "root", significa que o usuário root usou 'sudo ./script.sh'.
 if [ -z "$SUDO_USER" ] || [ "$SUDO_USER" == "root" ]; then
   echo "ERRO: Este script deve ser executado por um usuário comum usando 'sudo'."
-  echo "Não execute diretamente como root ou usando 'sudo' quando já logado como root."
-  echo "Exemplo: usuario_comum$ sudo $0"
+  echo "      Não execute diretamente como root ou usando 'sudo' quando já logado como root."
+  echo "      Exemplo: usuario_comum$ sudo $0"
   exit 1
 fi
+
+# ############################################################################################ #
+# ### INTALAÇOES DE PACOTES                                                                ### #
+# ############################################################################################ #
+
+dnf install                             \
+  gdm                                   \
+  gnome-shell                           \
+  gnome-terminal                        \
+  gnome-shell-extension-just-perfection \
+  gnome-shell-extension-blur-my-shell   \
+  nautilus                              \
+  nautilus-open-terminal                \
+  adobe-source-code-pro-fonts           \
+  distrobox                             \
+  google-noto-sans-cjk-ttc-fonts        \
+  google-noto-emoji-color-fonts         \
+  -y --setopt=install_weak_deps=false
 
 # ############################################################################################ #
 # ### FUNÇÕES                                                                              ### #
 # ############################################################################################ #
 
-# # verificar se o script está sendo executado como root
-# if [ "$(id -u)" -ne 0 ]; then
-#   echo "Este script precisa ser executado como root (ex: usando sudo)."
-#   exit 1
-# fi
+# executa como usuário que chamou o sudo
+runas() {
+  sudo -H -u "$SUDO_USER" -- "$@"
+  return $?
+}
 
-# # determina o usuário alvo
-# APPLY_GSETTINGS_FLAG=false # Assume que NÃO vamos aplicar por padrão
-# if [ -n "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ]; then
-#   echo "INFO: Configurações GSettings serão aplicadas para o usuário: $TARGET_USER"
-#   TARGET_USER="$SUDO_USER"
-#   APPLY_GSETTINGS_FLAG=true
-# else
-#   echo "AVISO: Não foi encontrado um usuário para aplicação de Configurações GSettings."
-#   # APPLY_GSETTINGS_FLAG=false
-# fi
+# função para executar gsettings sem sessão iniciada para usuário 
+gset() {
+  local g_schema="$1"
+  local g_key="$2"
+  local g_value="$3"
+  echo dbus-run-session gsettings set org.gnome.$g_schema $g_key $g_value 
+}
 
-# # função para usar gsettings sem sessão iniciada para usuário 
-# run_gsettings_for_user() {
-#   local g_subcommand="$1"
-#   local g_schema="$2"
-#   local g_key="$3"
-#   local g_value="$4"
-#   if ! sudo -H -u "$TARGET_USER" dbus-run-session gsettings "$g_subcommand" "$g_schema" "$g_key" "$g_value"; then
-#     echo "  AVISO: Falha ao executar gsettings $g_subcommand $g_schema $g_key para o usuário $TARGET_USER"
-#   fi
-# }
+# ############################################################################################ #
+# ### ESTILIZAÇÃO DO GNOME                                                                 ### #
+# ############################################################################################ #
 
-# ############################################################################################
-# ### INTALAÇOES DE PACOTES                                                                ###
-# ############################################################################################
+# dark mode
+gset desktop.interface      color-scheme                 "prefer-dark"
+gset desktop.interface      gtk-theme                    "Adwaita-dark"
+gset desktop.background     primary-color                "#2c3e50"
+gset desktop.interface      accent-color                 "purple"
 
-# dnf install                             \
-#   gdm                                   \
-#   gnome-shell                           \
-#   gnome-terminal                        \
-#   gnome-shell-extension-just-perfection \
-#   gnome-shell-extension-blur-my-shell   \
-#   nautilus                              \
-#   nautilus-open-terminal                \
-#   adobe-source-code-pro-fonts           \
-#   distrobox                             \
-#   google-noto-sans-cjk-ttc-fonts        \
-#   google-noto-emoji-color-fonts         \
-#   -y --setopt=install_weak_deps=false
+# shortcuts
+gset desktop.wm.keybindings switch-applications          "[]"
+gset desktop.wm.keybindings switch-applications-backward "[]"
+gset desktop.wm.keybindings switch-windows               "['<Alt>Tab']"
+gset desktop.wm.keybindings switch-windows-backward      "['<Shift><Alt>Tab']"
 
+# exteção just-perfection: meu estilo da extensão
+gset shell.extensions.just-perfection panel                          "false"
+gset shell.extensions.just-perfection dash-icon-size                 "32"
+gset shell.extensions.just-perfection dash-separator                 "false"
+gset shell.extensions.just-perfection workspace-switcher-should-show "false"
+gset shell.extensions.just-perfection search                         "false"
+gset shell.extensions.just-perfection panel-in-overview              "true"
 
-# ############################################################################################
-# ### GNOME                                                                                ###
-# ############################################################################################
+# IMORALIDADE: isso não mostra a mensagem de pedido de apoio
+#              NÃO FAÇA ISSO EM PRODUÇÂO, DOE! para o projeto just-perfection 
+gset shell.extensions.just-perfection support-notifier-showed-version "999"
 
-# # define sessões gráficas como padrão
-# systemctl set-default graphical.target
+# muda o formato de hora para 24hrs
+gset desktop.interface clock-format "24h"
 
-  
-# # gsettings
-# if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
-#   # dark mode
-#   run_gsettings_for_user set org.gnome.desktop.interface color-scheme "prefer-dark"
-#   run_gsettings_for_user set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
-#   run_gsettings_for_user set org.gnome.desktop.background primary-color "#2c3e50"
-#   run_gsettings_for_user set org.gnome.desktop.interface accent-color "purple"
-#   # shortcuts
-#   run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications "[]"
-#   run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
-#   run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows "['<Alt>Tab']"
-#   run_gsettings_for_user set org.gnome.desktop.wm.keybindings switch-windows-backward "['<Shift><Alt>Tab']"
-#   # muda o formato de hora para 24hrs
-#   run_gsettings_for_user set org.gnome.desktop.interface clock-format 24h    
-#   # habilita a extensões para o gnome
-#   run_gsettings_for_user set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']"
-#   # exteção just-perfection: meu estilo da extensão
-#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel false
-#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash-icon-size 32
-#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection dash-separator false
-#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection workspace-switcher-should-show false
-#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection search false
-#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection panel-in-overview true
-#   # isso não mostra a mensagem de pedido de apoio
-#   # NÃO FAÇA ISSO EM PRODUÇÂO, DOE! para o projeto just-perfection 
-#   run_gsettings_for_user set org.gnome.shell.extensions.just-perfection support-notifier-showed-version 999
-# fi
+# habilita a extensões para o gnome
+gset shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']"
 
-# ############################################################################################
-# ### DISTROBOX                                                                            ###
-# ############################################################################################
+# remove rodos os intens pinados na dash
+gset shell favorite-apps "[]"
 
-# clear
+# ############################################################################################ #
+# ### DISTROBOX                                                                            ### #
+# ############################################################################################ #
 
-# read -p "Press key to continue.. " -n1 -s
+runas bash -c "distrobox create        \
+  --image fedora                       \
+  --name day-by-day                    \
+  --hostname day-by-day                \
+  --home ~/.distrobox-homes/day-by-day \
+  --nvidia                             \
+  --yes"
 
-# distrobox create                      \
-#   --image fedora                      \
-#   --name day-by-day                   \
-#   --hostname day-by-day               \
-#   --home ~/Distrobox-Homes/day-by-day \
-#   --nvidia                            \
-#   --yes
+runas bash -c "distrobox create       \
+  --image fedora                      \
+  --name sandbox                      \
+  --hostname sandbox                  \
+  --home ~/.distrobox-homes/sandbox   \
+  --no-entry                          \
+  --nvidia                            \
+  --yes"
 
-# read -p "Press key to continue.. " -n1 -s
+# ############################################################################################ #
+# ### DEFINIR SESSÃO COMO GRÁFICA POR PADRÃO E INICIAR INICIAR GDM                         ### #
+# ############################################################################################ #
 
-# distrobox create                      \
-#   --image fedora                      \
-#   --name sandbox                      \
-#   --hostname sandbox                  \
-#   --home ~/Distrobox-Homes/sandbox    \
-#   --no-entry                          \
-#   --nvidia                            \
-#   --yes
-
-# ############################################################################################
-# ### CLEANUP                                                                              ###
-# ############################################################################################
-
-# # remove rodos os intens pinados na dash
-# if [ "$APPLY_GSETTINGS_FLAG" = true ]; then
-#   run_gsettings_for_user set org.gnome.shell favorite-apps "[]"
-# fi
-
-# ############################################################################################
-# ### INICIAR SESSÂO GDM                                                                   ###
-# ############################################################################################
-
-# systemctl start gdm
-
-
-2
+systemctl set-default graphical.target
+systemctl start gdm
