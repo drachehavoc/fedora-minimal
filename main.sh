@@ -31,7 +31,7 @@ fi
 cp /etc/dnf/dnf.conf /etc/dnf/dnf.conf.bak
 
 # Substitui o conteúdo do dnf.conf
-cat << EOF > /etc/dnf/dnf.conf
+cat << 'EOF' > /etc/dnf/dnf.conf
 [main]
 max_parallel_downloads=15
 installonly_limit=10
@@ -124,10 +124,11 @@ gset shell favorite-apps "[]"
 # adiciona repositório flathub 
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
-runas flatpak install flathub \
-  org.gnome.Totem             \
-  org.gnome.Loupe             \
-  -y
+#
+#runas flatpak install flathub \
+#  org.gnome.Totem             \
+#  org.gnome.Loupe             \
+#  -y
 
 
 # ############################################################################################ #
