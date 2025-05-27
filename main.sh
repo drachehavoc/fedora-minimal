@@ -55,13 +55,11 @@ dnf install                             \
   gnome-shell-extension-blur-my-shell   \
   nautilus                              \
   nautilus-open-terminal                \
-  loupe                                 \
-  totem                                 \
   adobe-source-code-pro-fonts           \
-  flatpak                               \
-  distrobox                             \
   google-noto-sans-cjk-ttc-fonts        \
   google-noto-emoji-color-fonts         \
+  flatpak                               \
+  distrobox                             \
   -y --setopt=install_weak_deps=false
 
 # ############################################################################################ #
@@ -120,11 +118,17 @@ gset shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur
 gset shell favorite-apps "[]"
 
 # ############################################################################################ #
-# ### FLATPAK                                                                              ### #
+# ### FLATPAKS                                                                             ### #
 # ############################################################################################ #
 
 # adiciona repositório flathub 
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+flatpak install flathub \
+  org.gnome.Totem       \
+  org.gnome.Loupe       \
+  -y
+
 
 # ############################################################################################ #
 # ### DISTROBOX                                                                            ### #
