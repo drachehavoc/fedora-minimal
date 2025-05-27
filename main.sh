@@ -55,6 +55,7 @@ dnf install                             \
   gnome-shell-extension-blur-my-shell   \
   nautilus                              \
   nautilus-open-terminal                \
+  loupe                                 \
   adobe-source-code-pro-fonts           \
   flatpak                               \
   distrobox                             \
