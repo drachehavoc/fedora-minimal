@@ -125,32 +125,31 @@ gset shell favorite-apps "[]"
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 # flatpaks 
-runas bash -c "flatpak install flathub \
-  org.gnome.Totem             \
-  org.gnome.Loupe             \
-  -y"             
+runas flatpak install flathub org.gnome.Totem -y
+  #org.gnome.Loupe 
+  #-y        
 
 
 # ############################################################################################ #
 # ### DISTROBOX                                                                            ### #
 # ############################################################################################ #
 
-runas bash -c "distrobox create        \
+runas distrobox create                 \
   --image fedora                       \
   --name day-by-day                    \
   --hostname day-by-day                \
   --home ~/.distrobox-homes/day-by-day \
   --nvidia                             \
-  --yes"
+  --yes
 
-runas bash -c "distrobox create       \
+runas distrobox create                \
   --image fedora                      \
   --name sandbox                      \
   --hostname sandbox                  \
   --home ~/.distrobox-homes/sandbox   \
   --no-entry                          \
   --nvidia                            \
-  --yes"
+  --yes
 
 # ############################################################################################ #
 # ### HABILITAR RPM FUSION                                                                 ### #
