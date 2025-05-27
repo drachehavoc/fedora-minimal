@@ -56,6 +56,7 @@ dnf install                             \
   nautilus                              \
   nautilus-open-terminal                \
   loupe                                 \
+  totem                                 \
   adobe-source-code-pro-fonts           \
   flatpak                               \
   distrobox                             \
