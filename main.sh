@@ -124,9 +124,9 @@ gset shell favorite-apps "[]"
 # adiciona repositório flathub 
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
-flatpak install flathub \
-  org.gnome.Totem       \
-  org.gnome.Loupe       \
+runas flatpak install flathub \
+  org.gnome.Totem             \
+  org.gnome.Loupe             \
   -y
 
 
