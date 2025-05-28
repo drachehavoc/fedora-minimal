@@ -1,70 +1,36 @@
 #!/bin/bash
 
-# ############################################################################################ #
-# ### VERIFICAR USUÁRIOS                                                                   ### #
-# ############################################################################################ #
+# ###################################################################################################### #
+# ###                                                                                                ### #
+# ### CHECK PERMISSIONS                                                                              ### #
+# ###                                                                                                ### #
+# ###################################################################################################### #
 
-# 1. Verificar se o script está sendo executado com privilégios de root
-if [ "$(id -u)" -ne 0 ]; then
-  echo "ERRO: Este script precisa ser executado com privilégios de root."
-  echo "      Por favor, use 'sudo $0'"
+if ! {                        \
+  [ "$(id -u)" -eq 0 ] &&     \
+  [ -n "$SUDO_USER" ]  &&     \
+  [ "$SUDO_USER" != "root" ]; \
+}; then
+  echo "ERRO | Este script deve ser executado por um usuário comum usando 'sudo'."
+  echo "     | Exemplo: usuario_comum$ sudo $0"
+  echo "     | Não execute diretamente como root ou usando 'sudo' quando já logado como root."
   exit 1
 fi
 
-# 2. Verificar se o script foi invocado por um usuário comum via sudo,
-#    e não diretamente pelo usuário root ou por 'root' usando sudo.
-#    A variável SUDO_USER contém o nome do usuário que invocou sudo.
-#    Se SUDO_USER estiver vazia, significa que não foi via sudo (login root direto).
-#    Se SUDO_USER for "root", significa que o usuário root usou 'sudo ./script.sh'.
-if [ -z "$SUDO_USER" ] || [ "$SUDO_USER" == "root" ]; then
-  echo "ERRO: Este script deve ser executado por um usuário comum usando 'sudo'."
-  echo "      Não execute diretamente como root ou usando 'sudo' quando já logado como root."
-  echo "      Exemplo: usuario_comum$ sudo $0"
-  exit 1
-fi
+# ###################################################################################################### #
+# ###                                                                                                ### #
+# ### UPDATE & UPGRADE                                                                               ### #
+# ###                                                                                                ### #
+# ###################################################################################################### #
 
-# ############################################################################################ #
-# ### CONFIGURAÇÃO DO DNF                                                                  ### #
-# ############################################################################################ #
+dnf upgrade -y
+dnf update -y
 
-# Backup do arquivo atual
-cp /etc/dnf/dnf.conf /etc/dnf/dnf.conf.bak
-
-# Substitui o conteúdo do dnf.conf
-cat << 'EOF' > /etc/dnf/dnf.conf
-[main]
-max_parallel_downloads=15
-installonly_limit=10
-install_weak_deps=False
-fastestmirror=True
-deltarpm=True
-EOF
-
-# 
-sudo dnf clean all
-
-# ############################################################################################ #
-# ### INTALAÇOES DE PACOTES                                                                ### #
-# ############################################################################################ #
-
-dnf install                             \
-  gdm                                   \
-  gnome-shell                           \
-  gnome-terminal                        \
-  gnome-shell-extension-just-perfection \
-  gnome-shell-extension-blur-my-shell   \
-  nautilus                              \
-  nautilus-open-terminal                \
-  adobe-source-code-pro-fonts           \
-  google-noto-sans-cjk-ttc-fonts        \
-  google-noto-emoji-color-fonts         \
-  flatpak                               \
-  distrobox                             \
-  -y --setopt=install_weak_deps=false
-
-# ############################################################################################ #
-# ### FUNÇÕES                                                                              ### #
-# ############################################################################################ #
+# ###################################################################################################### #
+# ###                                                                                                ### #
+# ### FUNCTIONS                                                                                      ### #
+# ###                                                                                                ### #
+# ###################################################################################################### #
 
 # executa como usuário que chamou o sudo
 runas() {
@@ -72,111 +38,156 @@ runas() {
   return $?
 }
 
-# função para executar gsettings sem sessão iniciada para usuário 
+# gsettings sem sessão iniciada para usuário 
 gset() {
-  local g_schema="$1"
-  local g_key="$2"
-  local g_value="$3"
-  runas dbus-run-session gsettings set org.gnome.$g_schema "$g_key" "$g_value" 
+  runas dbus-run-session gsettings "$@" 
 }
 
-# ############################################################################################ #
-# ### ESTILIZAÇÃO DO GNOME                                                                 ### #
-# ############################################################################################ #
+# ###################################################################################################### #
+# ###                                                                                                ### #
+# ### DEFINE PACKAGES TO INSTALL                                                                     ### #
+# ###                                                                                                ### #
+# ###################################################################################################### #
+
+# apps instaled in the host
+host_apps=(
+  # gnome
+  gdm
+  gnome-shell
+  gnome-terminal
+  # gnome extensions
+  gnome-shell-extension-just-perfection
+  gnome-shell-extension-blur-my-shell
+  # gnome apps
+  nautilus
+  nautilus-open-terminal
+  # fonts
+  adobe-source-code-pro-fonts
+  google-noto-sans-cjk-ttc-fonts
+  google-noto-emoji-color-fonts
+  # other apps
+  flatpak
+  distrobox
+)
+
+# apps flatpack
+flatpack_apps=(
+  org.gnome.Totem
+  org.gnome.Loupe
+)
+
+# ###################################################################################################### #
+# ###                                                                                                ### #
+# ### CONFIG PACKAGE MANAGER                                                                         ### #
+# ###                                                                                                ### #
+# ###################################################################################################### #
+
+# backup dnf.conf
+cp /etc/dnf/dnf.conf /etc/dnf/dnf.conf.bak
+
+# replace dnf.conf
+cat << 'EOF' > /etc/dnf/dnf.conf
+[main]
+max_parallel_downloads=15
+installonly_limit=10
+install_weak_deps=False
+#fastestmirror=True
+deltarpm=True
+EOF
+
+# ###################################################################################################### #
+# ###                                                                                                ### #
+# ### INSTALL PACKAGES                                                                               ### #
+# ###                                                                                                ### #
+# ###################################################################################################### #
+
+dnf install -y ${host_apps[@]}
+
+# ###################################################################################################### #
+# ###                                                                                                ### #
+# ### ADD REPOSITORIES                                                                               ### #
+# ###                                                                                                ### #
+# ###################################################################################################### #
+
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+runas flatpak install flathub -y ${flatpack_apps[@]}
+
+# ###################################################################################################### #
+# ###                                                                                                ### #
+# ### CONFIG GNOME SHELL                                                                             ### #
+# ###                                                                                                ### #
+# ###################################################################################################### #
 
 # dark mode
-gset desktop.interface      color-scheme                 "prefer-dark"
-gset desktop.interface      gtk-theme                    "Adwaita-dark"
-gset desktop.background     primary-color                "#2c3e50"
-gset desktop.interface      accent-color                 "purple"
+gset set org.gnome.desktop.interface  color-scheme  "prefer-dark"
+gset set org.gnome.desktop.interface  gtk-theme     "Adwaita-dark"
+gset set org.gnome.desktop.background primary-color "#2c3e50"
+gset set org.gnome.desktop.interface  accent-color  "purple"
 
 # shortcuts
-gset desktop.wm.keybindings switch-applications          "[]"
-gset desktop.wm.keybindings switch-applications-backward "[]"
-gset desktop.wm.keybindings switch-windows               "['<Alt>Tab']"
-gset desktop.wm.keybindings switch-windows-backward      "['<Shift><Alt>Tab']"
+gset set org.gnome.desktop.wm.keybindings switch-applications          "[]"
+gset set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
+gset set org.gnome.desktop.wm.keybindings switch-windows               "['<Alt>Tab']"
+gset set org.gnome.desktop.wm.keybindings switch-windows-backward      "['<Shift><Alt>Tab']"
 
 # exteção just-perfection: meu estilo da extensão
-gset shell.extensions.just-perfection panel                          "false"
-gset shell.extensions.just-perfection dash-icon-size                 "32"
-gset shell.extensions.just-perfection dash-separator                 "false"
-gset shell.extensions.just-perfection workspace-switcher-should-show "false"
-gset shell.extensions.just-perfection search                         "false"
-gset shell.extensions.just-perfection panel-in-overview              "true"
+gset set org.gnome.shell.extensions.just-perfection panel                          "false"
+gset set org.gnome.shell.extensions.just-perfection dash-icon-size                 "32"
+gset set org.gnome.shell.extensions.just-perfection dash-separator                 "false"
+gset set org.gnome.shell.extensions.just-perfection workspace-switcher-should-show "false"
+gset set org.gnome.shell.extensions.just-perfection search                         "false"
+gset set org.gnome.shell.extensions.just-perfection panel-in-overview              "true"
 
 # IMORALIDADE: isso não mostra a mensagem de pedido de apoio
 #              NÃO FAÇA ISSO EM PRODUÇÂO, DOE! para o projeto just-perfection 
-gset shell.extensions.just-perfection support-notifier-showed-version "999"
+gset set org.gnome.shell.extensions.just-perfection support-notifier-showed-version "999"
 
 # muda o formato de hora para 24hrs
-gset desktop.interface clock-format "24h"
+gset set org.gnome.desktop.interface clock-format "24h"
 
 # habilita a extensões para o gnome
-gset shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']" 
+gset set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']" 
 
 # remove rodos os intens pinados na dash
-gset shell favorite-apps "[]"
+# NÃO DESCOBRI COMO PERSISTIR ISSO
+gset set org.gnome.shell favorite-apps "[]"
 
-# ############################################################################################ #
-# ### FLATPAKS                                                                             ### #
-# ############################################################################################ #
+# remover grupos de apps
+# NÃO DESCOBRI COMO PERSISTIR ISSO
+gset reset-recursively org.gnome.desktop.app-folders
 
-# adiciona repositório flathub 
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-
-# flatpaks 
-runas flatpak install flathub org.gnome.Totem -y
-  #org.gnome.Loupe 
-  #-y        
+# listar pastas primeiro no nautilus
+gset set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
 
 
-# ############################################################################################ #
-# ### DISTROBOX                                                                            ### #
-# ############################################################################################ #
+# ###################################################################################################### #
+# ###                                                                                                ### #
+# ### DISTROBOX                                                                                      ### #
+# ###                                                                                                ### #
+# ###################################################################################################### #
 
-runas distrobox create                 \
+runas bash -c "distrobox create        \
   --image fedora                       \
   --name day-by-day                    \
   --hostname day-by-day                \
   --home ~/.distrobox-homes/day-by-day \
   --nvidia                             \
-  --yes
+  --yes"
 
-runas distrobox create                \
-  --image fedora                      \
-  --name sandbox                      \
-  --hostname sandbox                  \
-  --home ~/.distrobox-homes/sandbox   \
-  --no-entry                          \
-  --nvidia                            \
-  --yes
+runas bash -c "distrobox create     \
+  --image fedora                    \
+  --name sandbox                    \
+  --hostname sandbox                \
+  --home ~/.distrobox-homes/sandbox \
+  --no-entry                        \
+  --nvidia                          \
+  --yes"
 
-# ############################################################################################ #
-# ### HABILITAR RPM FUSION                                                                 ### #
-# ############################################################################################ #
-
-sudo dnf install                                                                                      \ 
-  https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm       \ 
-  https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-
-# ############################################################################################ #
-# ### INSTALAR DRIVER DA NVIDIA SE NECESSÁRIO                                              ### #
-# ############################################################################################ #
-
-if lspci | grep -iq 'nvidia'; then
-  dnf install -y akmod-nvidia xorg-x11-drv-nvidia-cuda nvidia-settings
-fi
-
-# ############################################################################################ #
-# ### UPDATE & UPGRADE                                                                     ### #
-# ############################################################################################ #
-
-dnf upgrade -y
-dnf update -y
-
-# ############################################################################################ #
-# ### DEFINIR SESSÃO COMO GRÁFICA POR PADRÃO E INICIAR INICIAR GDM                         ### #
-# ############################################################################################ #
+# ###################################################################################################### #
+# ###                                                                                                ### #
+# ### DEFINE GRAPHICAL TARGET AS DEFAULT & START GDM                                                 ### #
+# ###                                                                                                ### #
+# ###################################################################################################### #
 
 systemctl set-default graphical.target
 systemctl start gdm
