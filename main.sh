@@ -3,7 +3,6 @@
 # ###################################################################################################### #
 # ###                                                                                                ### #
 # ### CHECK PERMISSIONS                                                                              ### #
-# ###                                                                                                ### #
 # ###################################################################################################### #
 
 if ! {                        \
@@ -20,7 +19,6 @@ fi
 # ###################################################################################################### #
 # ###                                                                                                ### #
 # ### UPDATE & UPGRADE                                                                               ### #
-# ###                                                                                                ### #
 # ###################################################################################################### #
 
 dnf upgrade -y
@@ -29,16 +27,15 @@ dnf update -y
 # ###################################################################################################### #
 # ###                                                                                                ### #
 # ### FUNCTIONS                                                                                      ### #
-# ###                                                                                                ### #
 # ###################################################################################################### #
 
-# executa como usuário que chamou o sudo
+### executa como usuário que chamou o sudo
 runas() {
   sudo -H -u "$SUDO_USER" -- "$@"
   return $?
 }
 
-# gsettings sem sessão iniciada para usuário 
+### gsettings sem sessão iniciada para usuário 
 gset() {
   runas dbus-run-session gsettings "$@" 
 }
@@ -46,10 +43,9 @@ gset() {
 # ###################################################################################################### #
 # ###                                                                                                ### #
 # ### DEFINE PACKAGES TO INSTALL                                                                     ### #
-# ###                                                                                                ### #
 # ###################################################################################################### #
 
-# apps instaled in the host
+### apps instaled in the host
 host_apps=(
   # gnome
   gdm
@@ -70,7 +66,7 @@ host_apps=(
   distrobox
 )
 
-# apps flatpack
+### apps flatpack
 flatpack_apps=(
   org.gnome.Totem
   org.gnome.Loupe
@@ -79,13 +75,12 @@ flatpack_apps=(
 # ###################################################################################################### #
 # ###                                                                                                ### #
 # ### CONFIG PACKAGE MANAGER                                                                         ### #
-# ###                                                                                                ### #
 # ###################################################################################################### #
 
-# backup dnf.conf
+### backup dnf.conf
 cp /etc/dnf/dnf.conf /etc/dnf/dnf.conf.bak
 
-# replace dnf.conf
+### replace dnf.conf
 cat << 'EOF' > /etc/dnf/dnf.conf
 [main]
 max_parallel_downloads=15
@@ -98,7 +93,6 @@ EOF
 # ###################################################################################################### #
 # ###                                                                                                ### #
 # ### INSTALL PACKAGES                                                                               ### #
-# ###                                                                                                ### #
 # ###################################################################################################### #
 
 dnf install -y ${host_apps[@]}
@@ -106,7 +100,6 @@ dnf install -y ${host_apps[@]}
 # ###################################################################################################### #
 # ###                                                                                                ### #
 # ### ADD REPOSITORIES                                                                               ### #
-# ###                                                                                                ### #
 # ###################################################################################################### #
 
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -115,55 +108,57 @@ runas flatpak install flathub -y ${flatpack_apps[@]}
 # ###################################################################################################### #
 # ###                                                                                                ### #
 # ### CONFIG GNOME SHELL                                                                             ### #
-# ###                                                                                                ### #
 # ###################################################################################################### #
 
-# dark mode
-gset set org.gnome.desktop.interface  color-scheme  "prefer-dark"
-gset set org.gnome.desktop.interface  gtk-theme     "Adwaita-dark"
-gset set org.gnome.desktop.background primary-color "#2c3e50"
-gset set org.gnome.desktop.interface  accent-color  "purple"
+### prepare folder to config
+mkdir -p /etc/dconf/db/local.d/
 
-# shortcuts
-gset set org.gnome.desktop.wm.keybindings switch-applications          "[]"
-gset set org.gnome.desktop.wm.keybindings switch-applications-backward "[]"
-gset set org.gnome.desktop.wm.keybindings switch-windows               "['<Alt>Tab']"
-gset set org.gnome.desktop.wm.keybindings switch-windows-backward      "['<Shift><Alt>Tab']"
+### default customizations
+cat << 'EOF' > /etc/dconf/db/local.d/01-varela-customizations.conf
+[org/gnome/desktop/app-folders]
+folder-children=[] # @todo: não eta funcionando, depois que inicia a primeira sessão o gnome aperece com as pastas de programas
 
-# exteção just-perfection: meu estilo da extensão
-gset set org.gnome.shell.extensions.just-perfection panel                          "false"
-gset set org.gnome.shell.extensions.just-perfection dash-icon-size                 "32"
-gset set org.gnome.shell.extensions.just-perfection dash-separator                 "false"
-gset set org.gnome.shell.extensions.just-perfection workspace-switcher-should-show "false"
-gset set org.gnome.shell.extensions.just-perfection search                         "false"
-gset set org.gnome.shell.extensions.just-perfection panel-in-overview              "true"
+[org/gtk/gtk4/Settings/FileChooser]
+sort-directories-first=true # @ não esta funcionando, quando a sessão inicia as pastas não
 
-# IMORALIDADE: isso não mostra a mensagem de pedido de apoio
-#              NÃO FAÇA ISSO EM PRODUÇÂO, DOE! para o projeto just-perfection 
-gset set org.gnome.shell.extensions.just-perfection support-notifier-showed-version "999"
+[org/gnome/shell]
+favorite-apps=[]
 
-# muda o formato de hora para 24hrs
-gset set org.gnome.desktop.interface clock-format "24h"
+[org/gnome/desktop/interface]
+color-scheme="prefer-dark"
+gtk-theme="Adwaita-dark"
+accent-color="purple"
+clock-format="24h"
 
-# habilita a extensões para o gnome
-gset set org.gnome.shell enabled-extensions "['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']" 
+[org/gnome/desktop/background]
+primary-color="#2c3e50"
 
-# remove rodos os intens pinados na dash
-# NÃO DESCOBRI COMO PERSISTIR ISSO
-gset set org.gnome.shell favorite-apps "[]"
+[org/gnome/desktop/wm/keybindings]
+switch-applications="[]"
+switch-applications-backward="[]"
+switch-windows="['<Alt>Tab']"
+switch-windows-backward="['<Shift><Alt>Tab']"
 
-# remover grupos de apps
-# NÃO DESCOBRI COMO PERSISTIR ISSO
-gset reset-recursively org.gnome.desktop.app-folders
+[org/gnome/shell/extensions/just-perfection]
+panel=false
+dash-icon-size=32
+dash-separator=false
+workspace-switcher-should-show=false
+search=false
+panel-in-overview=true
+support-notifier-showed-version="999" # IMORALIDADE | isso desabilita a mensagem de pedido de financiamentodo projeto; 
+                                      #             | NÃO FAÇA ISSO EM PRODUÇÂO DOE! para o projeto just-perfection
 
-# listar pastas primeiro no nautilus
-gset set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
+[org/gnome/shell]
+enabled-extensions="['just-perfection-desktop@just-perfection', 'blur-my-shell@aunetx']"
+EOF
 
+### update dconf db
+dconf update
 
 # ###################################################################################################### #
 # ###                                                                                                ### #
 # ### DISTROBOX                                                                                      ### #
-# ###                                                                                                ### #
 # ###################################################################################################### #
 
 runas bash -c "distrobox create        \
@@ -186,7 +181,6 @@ runas bash -c "distrobox create     \
 # ###################################################################################################### #
 # ###                                                                                                ### #
 # ### DEFINE GRAPHICAL TARGET AS DEFAULT & START GDM                                                 ### #
-# ###                                                                                                ### #
 # ###################################################################################################### #
 
 systemctl set-default graphical.target
